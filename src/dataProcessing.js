@@ -3,6 +3,7 @@ import { getSeenArticleURLs } from "./utils.js";
 import moment from "moment";
 
 const processRSSEntryData = async (rssFeeds) => {
+  console.log("Cleaning RSS data...");
   const articles = [];
   for (const rssFeed of rssFeeds) {
     if (rssFeed.feed && rssFeed.feed.entry) {

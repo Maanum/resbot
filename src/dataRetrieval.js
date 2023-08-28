@@ -1,15 +1,15 @@
 import axios from "axios";
 import xml2js from "xml2js";
-import { extract } from "@extractus/article-extractor";
+import { extractFromHtml } from "@extractus/article-extractor";
 import { stripHtml } from "string-strip-html";
-import { CHATGPT_PROMPT_TEMPLATE } from "./config.js";
-import { openai } from "./config.js";
+import { openai, CHATGPT_PROMPT_TEMPLATE } from "./config.js";
 
 // Function to fetch RSS data from provided feed URLs
 const fetchRSSData = async (feedUrls) => {
   const allFeedData = [];
 
   for (const feed of feedUrls) {
+    console.log(`Fetching RSS data from ${feed}...`);
     try {
       const response = await axios.get(feed);
       const result = await xml2js.parseStringPromise(response.data);
@@ -23,11 +23,24 @@ const fetchRSSData = async (feedUrls) => {
 };
 
 const getArticleContent = async (articles) => {
+  console.log("Extracting article content...");
   const articlesWithContent = [];
 
   for (const article of articles) {
-    const articleExtractObject = await extract(article.articleUrl);
-    const articleText = stripHtml(articleExtractObject.content).result;
+    let articleText = "";
+    try {
+      const response = await axios.get(article.articleUrl);
+      const htmlContent = response.data;
+      const articleExtractObject = await extractFromHtml(htmlContent);
+      if (articleExtractObject) {
+        articleText = stripHtml(articleExtractObject.content).result;
+      }
+    } catch (error) {
+      console.error(
+        `Failed to extract article content: ${article.articleUrl}\n${error.message}`
+      );
+    }
+
     articlesWithContent.push({ ...article, articleText });
   }
   return articlesWithContent;
@@ -35,6 +48,7 @@ const getArticleContent = async (articles) => {
 
 const getArticleAnalysis = async (articles) => {
   const articlesWithAnalysis = [];
+  console.log("Analyzing articles...");
 
   for (const article of articles) {
     try {

@@ -9,17 +9,18 @@ import {
   processRSSEntryData,
 } from "./dataProcessing.js";
 import { sendDigestMessage } from "./notification.js";
-import { RSS_URLS } from "./config.js";
-import { appendArticles } from "./utils.js";
+import { addArticles, getFeedUrls } from "./utils.js";
 import cronstrue from "cronstrue";
 
 const retrieveNewArticles = async () => {
-  const rssFeedData = await fetchRSSData(RSS_URLS);
+  console.log("Fetching new articles...");
+  const rssUrls = await getFeedUrls();
+  const rssFeedData = await fetchRSSData(rssUrls);
   const articles = await processRSSEntryData(rssFeedData);
   const newArticles = await filterOutKnownArticles(articles);
   const articlesWithContent = await getArticleContent(newArticles);
   const fullArticles = await getArticleAnalysis(articlesWithContent);
-  appendArticles(fullArticles);
+  addArticles(fullArticles);
 };
 
 const jobRetrieveArticles = new CronJob(
@@ -52,6 +53,10 @@ async function main() {
   );
 }
 
-main().catch((error) => {
-  console.error("An error occurred:", error);
-});
+// main().catch((error) => {
+//   console.error("An error occurred:", error);
+// });
+
+// sendDigestMessage();
+
+retrieveNewArticles();

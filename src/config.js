@@ -31,11 +31,4 @@ sentences and no more than 25 words total.
 APPLICABLE" and no other text.
 `;
 
-const RSS_URLS = [
-  "https://www.google.com/alerts/feeds/10052944478562446622/2668362383341309773",
-  "https://www.google.com/alerts/feeds/10052944478562446622/9817861748627755893",
-  "https://www.google.com/alerts/feeds/10052944478562446622/1634616252303905752",
-  "https://www.hellenicshippingnews.com/category/shipping-news/shipping-emission-possible/feed/",
-];
-
-export { RSS_URLS, CHATGPT_PROMPT_TEMPLATE, openai };
+export { CHATGPT_PROMPT_TEMPLATE, openai };
