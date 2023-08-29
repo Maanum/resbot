@@ -5,7 +5,7 @@ import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, "/db/db.json");
+const file = join(__dirname, process.env.DB_FILE || "db.json");
 
 const adapter = new JSONFile(file);
 const defaultData = { articles: [], feeds: [] };
