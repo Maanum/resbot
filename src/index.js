@@ -53,10 +53,9 @@ async function main() {
   );
 }
 
-// main().catch((error) => {
-//   console.error("An error occurred:", error);
-// });
+main().catch((error) => {
+  console.error("An error occurred:", error);
+});
 
 // sendDigestMessage();
-
-retrieveNewArticles();
+// retrieveNewArticles();
