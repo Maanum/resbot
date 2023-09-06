@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { getSeenArticleURLs } from "./utils.js";
+import { ArticleDAO } from "./utils.js";
 import moment from "moment";
 
 const processRSSEntryData = async (rssFeeds) => {
@@ -64,7 +64,7 @@ const processRSSEntryData = async (rssFeeds) => {
 };
 
 const filterOutKnownArticles = async (articles) => {
-  const seenUrls = await getSeenArticleURLs();
+  const seenUrls = await ArticleDAO.getSeenArticleURLs();
   return articles.filter((article) => {
     return !seenUrls.has(article.articleUrl);
   });

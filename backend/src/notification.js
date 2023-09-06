@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { getUnsentArticles, markArticleAsSent } from "./utils.js";
+import { ArticleDAO } from "./utils.js";
 
 const createNotificationBodyText = async (articles) => {
   if (!Array.isArray(articles)) {
@@ -42,7 +42,7 @@ const createNotificationBodyText = async (articles) => {
 };
 
 const sendDigestMessage = async () => {
-  const articles = getUnsentArticles();
+  const articles = ArticleDAO.getUnsentArticles();
   if (articles.length === 0) {
     console.log("Email: No new articles to send.");
     return;
@@ -70,7 +70,7 @@ const sendDigestMessage = async () => {
     let info = await transporter.sendMail(mailOptions);
     console.log(`Email: Successfully Sent: ${info.response}`);
     articles.forEach((article) => {
-      markArticleAsSent(article);
+      ArticleDAO.markArticleAsSent(article);
     });
   } catch (error) {
     console.error(`Email: Error occurred: ${error.message}`);
