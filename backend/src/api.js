@@ -12,8 +12,9 @@ app.use(bodyParser.json());
 
 // CRUD API Endpoints
 
-app.get("/api/feeds", (res) => {
-  res.json({ feeds: FeedDAO.getFeeds() });
+app.get("/api/feeds", async (req, res) => {
+  const data = await FeedDAO.getFeeds();
+  res.json({ data });
 });
 
 // // Read all articles
@@ -49,3 +50,5 @@ app.get("/api/feeds", (res) => {
 
 //   res.json({ article });
 // });
+
+export default app;
