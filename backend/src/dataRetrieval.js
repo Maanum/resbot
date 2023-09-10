@@ -81,12 +81,16 @@ const getArticleAnalysis = async (articles) => {
 };
 
 const getFavicon = async (url) => {
-  const parsedUrl = new URL(url);
-  const coreURL = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
-  const data = await getFavicons(coreURL);
-  if (data && data.icons && data.icons.length > 0) {
-    return data.icons[0].src;
-  } else {
+  try {
+    const parsedUrl = new URL(url);
+    const coreURL = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
+    const data = await getFavicons(coreURL);
+    if (data && data.icons && data.icons.length > 0) {
+      return data.icons[0].src;
+    } else {
+      return null;
+    }
+  } catch {
     return null;
   }
 };

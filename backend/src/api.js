@@ -47,7 +47,6 @@ app.post("/api/feeds", async (req, res) => {
     res.status(201).json({ data: daoResponse });
   } catch (error) {
     // Based on the error message, determine the error code.
-    console.log(error);
     if (error.message.includes("Invalid feed data")) {
       res.status(400).send({
         error: { message: error.message },
@@ -60,7 +59,6 @@ app.post("/api/feeds", async (req, res) => {
 });
 
 app.delete("/api/feeds/:id", async (req, res) => {
-  console.log(req.params.id);
   try {
     await FeedDAO.deleteFeedById(req.params.id);
     res.status(204).send();
