@@ -3,6 +3,7 @@ import xml2js from "xml2js";
 import { extractFromHtml } from "@extractus/article-extractor";
 import { stripHtml } from "string-strip-html";
 import { openai, CHATGPT_PROMPT_TEMPLATE } from "./config.js";
+import getFavicons from "get-website-favicon";
 
 // Function to fetch RSS data from provided feed URLs
 const fetchRSSData = async (feedUrls) => {
@@ -79,4 +80,15 @@ const getArticleAnalysis = async (articles) => {
   return articlesWithAnalysis;
 };
 
-export { fetchRSSData, getArticleContent, getArticleAnalysis };
+const getFavicon = async (url) => {
+  const parsedUrl = new URL(url);
+  const coreURL = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
+  const data = await getFavicons(coreURL);
+  if (data && data.icons && data.icons.length > 0) {
+    return data.icons[0].src;
+  } else {
+    return null;
+  }
+};
+
+export { fetchRSSData, getArticleContent, getArticleAnalysis, getFavicon };

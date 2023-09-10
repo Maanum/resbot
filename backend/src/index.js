@@ -11,6 +11,9 @@ import {
 import { sendDigestMessage } from "./notification.js";
 import { ArticleDAO, FeedDAO } from "./utils.js";
 import cronstrue from "cronstrue";
+import app from "./api.js";
+
+const port = process.env.PORT || 3001;
 
 const retrieveNewArticles = async () => {
   console.log("Fetching new articles...");
@@ -57,5 +60,9 @@ async function main() {
 //   console.error("An error occurred:", error);
 // });
 
-sendDigestMessage();
+// sendDigestMessage();
 // retrieveNewArticles();
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
