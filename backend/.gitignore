@@ -132,3 +132,5 @@ dist
 
 src/db/*
 src/db/db.json
+data/*
+data/db.json
