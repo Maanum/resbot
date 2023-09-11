@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getFavicon } from "../utils/dataRetrieval.js";
 import { FeedDAO } from "../dao/FeedDAO.js";
 
+const getFeeds = async () => await FeedDAO.getFeeds();
+
 const createFeed = async (newFeedData) => {
   const keys = Object.keys(newFeedData);
   if (keys.length !== 2 || !newFeedData.name || !newFeedData.url) {
@@ -25,7 +27,7 @@ const updateFeed = async (id, newFeedData) => {
     );
   }
 
-  return await FeedDAO.updateFeedById(id, newFeedData);
+  return await FeedDAO.updateFeed(id, newFeedData);
 };
 
 const getFeedUrls = async () => {
@@ -33,8 +35,4 @@ const getFeedUrls = async () => {
   return feeds.map((feed) => feed.url);
 };
 
-export default {
-  createFeed,
-  updateFeed,
-  // ... any other feed-specific services you might need.
-};
+export { getFeeds, getFeedUrls, createFeed, updateFeed };

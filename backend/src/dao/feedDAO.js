@@ -8,7 +8,7 @@ const FeedDAO = {
     return db.data.feeds;
   },
 
-  getFeedById: async (id) => {
+  getFeed: async (id) => {
     const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
     if (index !== -1) {
@@ -25,7 +25,7 @@ const FeedDAO = {
     return feed;
   },
 
-  updateFeedById: async (id, newFeedData) => {
+  updateFeed: async (id, newFeedData) => {
     const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
 
@@ -38,7 +38,7 @@ const FeedDAO = {
     }
   },
 
-  deleteFeedById: async (id) => {
+  deleteFeed: async (id) => {
     const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
     if (index !== -1) {

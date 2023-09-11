@@ -17,7 +17,7 @@ const retrieveNewArticles = async () => {
   const newArticles = await filterOutKnownArticles(articles);
   const articlesWithContent = await getArticleContent(newArticles);
   const fullArticles = await getArticleAnalysis(articlesWithContent);
-  ArticleDAO.addArticles(fullArticles);
+  ArticleDAO.createArticles(fullArticles);
 };
 
 // Utility function to get seen URLs

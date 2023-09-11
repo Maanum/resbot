@@ -1,13 +1,12 @@
 import { getDb } from "../config/initDB.js";
 
 const ArticleDAO = {
-  // Utility function to append seen URLs
   getArticles: async () => {
     const db = await getDb();
     return db.data.articles;
   },
 
-  addArticles: async (newArticles) => {
+  createArticles: async (newArticles) => {
     const db = await getDb();
     db.data.articles = [...db.data.articles, ...newArticles];
     db.write();

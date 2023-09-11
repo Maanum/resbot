@@ -1,18 +1,18 @@
 import express from "express";
-import { FeedDAO } from "../dao/feedDAO.js";
+import { getFeeds, updateFeed } from "../services/feedService.js";
 
 const router = express.Router();
 
 // CRUD API Endpoints
 router.get("/api/feeds", async (req, res) => {
-  const data = await FeedDAO.getFeeds();
+  const data = await getFeeds();
   res.json({ data });
 });
 
 // Update an existing article
 router.put("/api/feeds/:id", async (req, res) => {
   try {
-    const daoResponse = await FeedDAO.updateFeedById(req.params.id, req.body);
+    const daoResponse = await updateFeed(req.params.id, req.body);
 
     // Successfully updated the feed.
     res.json({ data: daoResponse });
