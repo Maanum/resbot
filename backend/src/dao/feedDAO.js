@@ -18,31 +18,16 @@ const FeedDAO = {
     }
   },
 
-  createFeed: async (newFeedData) => {
+  createFeed: async (feed) => {
     const db = await getDb();
-    const keys = Object.keys(newFeedData);
-    if (keys.length !== 2 || !newFeedData.name || !newFeedData.url) {
-      throw new Error(
-        `Invalid feed data. Expected only "name" and "url" fields.`
-      );
-    }
-    const feedIcon = await getFavicon(newFeedData.url);
-    const feedFull = { ...newFeedData, id: uuidv4(), icon: feedIcon };
-
-    db.data.feeds.push(feedFull);
+    db.data.feeds.push(feed);
     db.write();
-    return feedFull;
+    return feed;
   },
 
   updateFeedById: async (id, newFeedData) => {
     const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
-    const keys = Object.keys(newFeedData);
-    if (keys.length !== 2 || !newFeedData.name || !newFeedData.url) {
-      throw new Error(
-        `Invalid feed data. Expected only "name" and "url" fields.`
-      );
-    }
 
     if (index !== -1) {
       db.data.feeds[index] = { ...db.data.feeds[index], ...newFeedData };
@@ -64,11 +49,6 @@ const FeedDAO = {
     } else {
       throw new Error(`Feed with id ${id} not found`);
     }
-  },
-
-  getFeedUrls: async () => {
-    const db = await getDb();
-    return db.data.feeds.map((feed) => feed.url);
   },
 };
 

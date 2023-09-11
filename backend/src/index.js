@@ -3,11 +3,10 @@ import cors from "cors";
 import { getDb } from "./config/initDB.js";
 import feedRoutes from "./api/feedRoutes.js";
 import jobService from "./services/jobService.js";
-import { JobDAO } from "./dao/jobDAO.js";
 
 const initializeApp = async () => {
   await getDb(); // Initialize the database
-  await jobService.initializeJobs(JobDAO); // Initialize the Jobs
+  await jobService.initializeJobs(); // Initialize the Jobs
 
   const app = express();
   app.use(cors());

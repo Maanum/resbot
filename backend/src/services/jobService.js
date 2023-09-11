@@ -2,6 +2,7 @@ import { CronJob } from "cron";
 import cronstrue from "cronstrue";
 import { sendDigestMessage } from "../utils/emailHelper.js";
 import { retrieveNewArticles } from "./articleService.js";
+import { JobDAO } from "../dao/jobDAO.js";
 
 const jobFunctions = {
   SEND: sendDigestMessage,
@@ -24,7 +25,7 @@ const handleJob = async (job) => {
   );
 };
 
-const initializeJobs = async (JobDAO) => {
+const initializeJobs = async () => {
   const jobList = await JobDAO.getJobs();
   jobList.forEach((job) => {
     handleJob(job);
