@@ -1,17 +1,22 @@
+import { getDb } from "../config/initDB.js";
+
 const ArticleDAO = {
   // Utility function to get seen URLs
   getSeenArticleURLs: async () => {
+    const db = await getDb();
     const seenUrls = new Set(
       db.data.articles.map((article) => article.articleUrl)
     );
     return seenUrls;
   },
 
-  getUnsentArticles: () => {
+  getUnsentArticles: async () => {
+    const db = await getDb();
     return db.data.articles.filter((article) => article.sentInDigest === false);
   },
 
-  markArticleAsSent: (article) => {
+  markArticleAsSent: async (article) => {
+    const db = await getDb();
     const index = db.data.articles.findIndex(
       (dbArticle) => dbArticle === article
     );
@@ -23,6 +28,7 @@ const ArticleDAO = {
 
   // Utility function to append seen URLs
   addArticles: async (newArticles) => {
+    const db = await getDb();
     db.data.articles = [...db.data.articles, ...newArticles];
     db.write();
   },

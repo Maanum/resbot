@@ -4,15 +4,21 @@ import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, `db/${process.env.DB_NAME || "db.json"}`);
+const file = join(
+  __dirname,
+  `../../data/${process.env.DB_NAME || "../../data/db.json"}`
+);
 
 const adapter = new JSONFile(file);
 const defaultData = { articles: [], feeds: [] };
+let db;
 
-// Initialize the database
-const initDB = async () => {
-  const db = new Low(adapter, defaultData);
-  await db.read();
+const getDb = async () => {
+  if (!db) {
+    db = new Low(adapter, defaultData);
+    await db.read();
+  }
+  return db;
 };
 
-export { initDB };
+export { getDb };

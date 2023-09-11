@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { ArticleDAO } from "./dao/articleDAO.js";
+import { ArticleDAO } from "../dao/articleDAO.js";
 
 const createNotificationBodyText = async (articles) => {
   if (!Array.isArray(articles)) {

@@ -1,12 +1,15 @@
+import { getDb } from "../config/initDB.js";
 import { v4 as uuidv4 } from "uuid";
 import { getFavicon } from "../utils/dataRetrieval.js";
 
 const FeedDAO = {
   getFeeds: async () => {
+    const db = await getDb();
     return db.data.feeds;
   },
 
   getFeedById: async (id) => {
+    const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
     if (index !== -1) {
       return db.data.feeds[index];
@@ -16,6 +19,7 @@ const FeedDAO = {
   },
 
   createFeed: async (newFeedData) => {
+    const db = await getDb();
     const keys = Object.keys(newFeedData);
     if (keys.length !== 2 || !newFeedData.name || !newFeedData.url) {
       throw new Error(
@@ -31,6 +35,7 @@ const FeedDAO = {
   },
 
   updateFeedById: async (id, newFeedData) => {
+    const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
     const keys = Object.keys(newFeedData);
     if (keys.length !== 2 || !newFeedData.name || !newFeedData.url) {
@@ -49,6 +54,7 @@ const FeedDAO = {
   },
 
   deleteFeedById: async (id) => {
+    const db = await getDb();
     const index = db.data.feeds.findIndex((feed) => feed.id === id);
     if (index !== -1) {
       const deletedFeed = db.data.feeds[index];
@@ -61,6 +67,7 @@ const FeedDAO = {
   },
 
   getFeedUrls: async () => {
+    const db = await getDb();
     return db.data.feeds.map((feed) => feed.url);
   },
 };

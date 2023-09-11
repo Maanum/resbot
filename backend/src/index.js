@@ -1,77 +1,31 @@
-import {
-  fetchRSSData,
-  getArticleContent,
-  getArticleAnalysis,
-} from "./utils/dataRetrieval.js";
-import {
-  filterOutKnownArticles,
-  processRSSEntryData,
-} from "./utils/rssProcessor.js";
-import { sendDigestMessage } from "./notification.js";
-import { ArticleDAO } from "./dao/articleDAO.js";
-import { FeedDAO } from "./dao/feedDAO.js";
+import express from "express";
+import cors from "cors";
+import { getDb } from "./config/initDB.js";
+import feedRoutes from "./api/feedRoutes.js";
+import jobService from "./services/jobService.js";
 import { JobDAO } from "./dao/jobDAO.js";
-import { initDB } from "./config/initDB.js";
 
-import cronstrue from "cronstrue";
-import app from "./api/serverRoutes.js";
-import { CronJob } from "cron";
+const initializeApp = async () => {
+  await getDb(); // Initialize the database
+  await jobService.initializeJobs(JobDAO); // Initialize the Jobs
 
-const port = process.env.PORT || 3001;
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+  app.use(feedRoutes);
 
-const retrieveNewArticles = async () => {
-  console.log("Fetching new articles...");
-  const rssUrls = await FeedDAO.getFeedUrls();
-  const rssFeedData = await fetchRSSData(rssUrls);
-  const articles = await processRSSEntryData(rssFeedData);
-  const newArticles = await filterOutKnownArticles(articles);
-  const articlesWithContent = await getArticleContent(newArticles);
-  const fullArticles = await getArticleAnalysis(articlesWithContent);
-  ArticleDAO.addArticles(fullArticles);
-};
-
-const jobFunctions = {
-  SEND: sendDigestMessage,
-  RETRIEVE: retrieveNewArticles,
-};
-
-const jobHandler = async (job) => {
-  const cronJobObject = new CronJob(
-    job.cronTime,
-    jobFunctions[job.type],
-    null,
-    false,
-    job.timezone
-  );
-  cronJobObject.start();
-  console.log(
-    `Job started! ${job.type}: ${cronstrue.toString(
-      cronJobObject.cronTime.source
-    )}`
-  );
-};
-
-const main = async () => {
-  const jobList = await JobDAO.getJobs();
-  jobList.forEach((job) => {
-    jobHandler(job);
+  const port = process.env.PORT || 3001;
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
   });
 };
 
-// main().catch((error) => {
-//   console.error("An error occurred:", error);
-// });
-
-initDB()
+initializeApp()
   .then(() => {
-    // Once the database is initialized, start the server
-    const port = 3001;
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
+    console.log("Application started.");
   })
   .catch((err) => {
-    console.error("Failed to initialize the database:", err);
+    console.error("Error during initialization:", err);
   });
 
 // sendDigestMessage();
