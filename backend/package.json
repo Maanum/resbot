@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "dotenv -e .env node src/index.js",
-    "start:test": "dotenv -e .env.test node src/test2.js"
+    "start": "dotenv -e .env node src/index.js"
   },
   "author": "",
   "license": "ISC",

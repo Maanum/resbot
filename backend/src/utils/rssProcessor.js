@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { ArticleDAO } from "./utils.js";
+import { ArticleDAO } from "../dao/articleDAO.js";
 import moment from "moment";
 
 const processRSSEntryData = async (rssFeeds) => {

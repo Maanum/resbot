@@ -1,17 +1,21 @@
-import { CronJob } from "cron";
 import {
   fetchRSSData,
   getArticleContent,
   getArticleAnalysis,
-} from "./dataRetrieval.js";
+} from "./utils/dataRetrieval.js";
 import {
   filterOutKnownArticles,
   processRSSEntryData,
-} from "./dataProcessing.js";
+} from "./utils/rssProcessor.js";
 import { sendDigestMessage } from "./notification.js";
-import { ArticleDAO, FeedDAO } from "./utils.js";
+import { ArticleDAO } from "./dao/articleDAO.js";
+import { FeedDAO } from "./dao/feedDAO.js";
+import { JobDAO } from "./dao/jobDAO.js";
+import { initDB } from "./config/initDB.js";
+
 import cronstrue from "cronstrue";
-import app from "./api.js";
+import app from "./api/serverRoutes.js";
+import { CronJob } from "cron";
 
 const port = process.env.PORT || 3001;
 
@@ -26,43 +30,49 @@ const retrieveNewArticles = async () => {
   ArticleDAO.addArticles(fullArticles);
 };
 
-const jobRetrieveArticles = new CronJob(
-  "0 */6 * * *",
-  retrieveNewArticles,
-  null,
-  false,
-  "America/North_Dakota/Center"
-);
+const jobFunctions = {
+  SEND: sendDigestMessage,
+  RETRIEVE: retrieveNewArticles,
+};
 
-const jobSendDigest = new CronJob(
-  "0 6 * * *",
-  sendDigestMessage,
-  null,
-  false,
-  "America/North_Dakota/Center"
-);
-
-async function main() {
-  jobRetrieveArticles.start();
-  jobSendDigest.start();
-  console.log("RSS reader jobs started!");
-  console.log(
-    `Digest Sending: ${cronstrue.toString(jobSendDigest.cronTime.source)}`
+const jobHandler = async (job) => {
+  const cronJobObject = new CronJob(
+    job.cronTime,
+    jobFunctions[job.type],
+    null,
+    false,
+    job.timezone
   );
+  cronJobObject.start();
   console.log(
-    `Fetching Articles: ${cronstrue.toString(
-      jobRetrieveArticles.cronTime.source
+    `Job started! ${job.type}: ${cronstrue.toString(
+      cronJobObject.cronTime.source
     )}`
   );
-}
+};
+
+const main = async () => {
+  const jobList = await JobDAO.getJobs();
+  jobList.forEach((job) => {
+    jobHandler(job);
+  });
+};
 
 // main().catch((error) => {
 //   console.error("An error occurred:", error);
 // });
 
+initDB()
+  .then(() => {
+    // Once the database is initialized, start the server
+    const port = 3001;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to initialize the database:", err);
+  });
+
 // sendDigestMessage();
 // retrieveNewArticles();
-
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});

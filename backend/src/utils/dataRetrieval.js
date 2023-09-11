@@ -2,7 +2,7 @@ import axios from "axios";
 import xml2js from "xml2js";
 import { extractFromHtml } from "@extractus/article-extractor";
 import { stripHtml } from "string-strip-html";
-import { openai, CHATGPT_PROMPT_TEMPLATE } from "./config.js";
+import { openai, CHATGPT_PROMPT_TEMPLATE } from "../config/config.js";
 import getFavicons from "get-website-favicon";
 
 // Function to fetch RSS data from provided feed URLs

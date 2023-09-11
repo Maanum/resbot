@@ -1,47 +1,5 @@
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { v4 as uuidv4 } from "uuid";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
-import { getFavicon } from "./dataRetrieval.js";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, `db/${process.env.DB_NAME || "db.json"}`);
-
-const adapter = new JSONFile(file);
-const defaultData = { articles: [], feeds: [] };
-const db = new Low(adapter, defaultData);
-await db.read();
-
-const ArticleDAO = {
-  // Utility function to get seen URLs
-  getSeenArticleURLs: async () => {
-    const seenUrls = new Set(
-      db.data.articles.map((article) => article.articleUrl)
-    );
-    return seenUrls;
-  },
-
-  getUnsentArticles: () => {
-    return db.data.articles.filter((article) => article.sentInDigest === false);
-  },
-
-  markArticleAsSent: (article) => {
-    const index = db.data.articles.findIndex(
-      (dbArticle) => dbArticle === article
-    );
-    if (index !== -1) {
-      db.data.articles[index].sentInDigest = true;
-      db.write();
-    }
-  },
-
-  // Utility function to append seen URLs
-  addArticles: async (newArticles) => {
-    db.data.articles = [...db.data.articles, ...newArticles];
-    db.write();
-  },
-};
+import { getFavicon } from "../utils/dataRetrieval.js";
 
 const FeedDAO = {
   getFeeds: async () => {
@@ -107,4 +65,4 @@ const FeedDAO = {
   },
 };
 
-export { FeedDAO, ArticleDAO };
+export { FeedDAO };
