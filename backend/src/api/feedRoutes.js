@@ -1,5 +1,10 @@
 import express from "express";
-import { getFeeds, updateFeed } from "../services/feedService.js";
+import {
+  getFeeds,
+  updateFeed,
+  createFeed,
+  deleteFeed,
+} from "../services/feedService.js";
 
 const router = express.Router();
 
@@ -12,10 +17,10 @@ router.get("/api/feeds", async (req, res) => {
 // Update an existing article
 router.put("/api/feeds/:id", async (req, res) => {
   try {
-    const daoResponse = await updateFeed(req.params.id, req.body);
+    const serviceResponse = await updateFeed(req.params.id, req.body);
 
     // Successfully updated the feed.
-    res.json({ data: daoResponse });
+    res.json({ data: serviceResponse });
   } catch (error) {
     // Based on the error message, determine the error code.
     if (error.message.includes("not found")) {
@@ -35,8 +40,8 @@ router.put("/api/feeds/:id", async (req, res) => {
 
 router.post("/api/feeds", async (req, res) => {
   try {
-    const daoResponse = await FeedDAO.createFeed(req.body);
-    res.status(201).json({ data: daoResponse });
+    const serviceResponse = await createFeed(req.body);
+    res.status(201).json({ data: serviceResponse });
   } catch (error) {
     // Based on the error message, determine the error code.
     if (error.message.includes("Invalid feed data")) {
@@ -52,7 +57,7 @@ router.post("/api/feeds", async (req, res) => {
 
 router.delete("/api/feeds/:id", async (req, res) => {
   try {
-    await FeedDAO.deleteFeedById(req.params.id);
+    await deleteFeed(req.params.id);
     res.status(204).send();
   } catch (error) {
     // Based on the error message, determine the error code.
