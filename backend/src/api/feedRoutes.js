@@ -1,26 +1,18 @@
 import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import { FeedDAO } from "../dao/feedDAO.js";
+import { getFeeds, updateFeed } from "../services/feedService.js";
 
-const app = express();
-const port = 3001;
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
+const router = express.Router();
 
 // CRUD API Endpoints
-
-app.get("/api/feeds", async (req, res) => {
-  const data = await FeedDAO.getFeeds();
+router.get("/api/feeds", async (req, res) => {
+  const data = await getFeeds();
   res.json({ data });
 });
 
 // Update an existing article
-app.put("/api/feeds/:id", async (req, res) => {
+router.put("/api/feeds/:id", async (req, res) => {
   try {
-    const daoResponse = await FeedDAO.updateFeedById(req.params.id, req.body);
+    const daoResponse = await updateFeed(req.params.id, req.body);
 
     // Successfully updated the feed.
     res.json({ data: daoResponse });
@@ -41,7 +33,7 @@ app.put("/api/feeds/:id", async (req, res) => {
   }
 });
 
-app.post("/api/feeds", async (req, res) => {
+router.post("/api/feeds", async (req, res) => {
   try {
     const daoResponse = await FeedDAO.createFeed(req.body);
     res.status(201).json({ data: daoResponse });
@@ -58,7 +50,7 @@ app.post("/api/feeds", async (req, res) => {
   }
 });
 
-app.delete("/api/feeds/:id", async (req, res) => {
+router.delete("/api/feeds/:id", async (req, res) => {
   try {
     await FeedDAO.deleteFeedById(req.params.id);
     res.status(204).send();
@@ -75,4 +67,4 @@ app.delete("/api/feeds/:id", async (req, res) => {
   }
 });
 
-export default app;
+export default router;
