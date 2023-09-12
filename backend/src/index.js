@@ -26,6 +26,3 @@ initializeApp()
   .catch((err) => {
     console.error("Error during initialization:", err);
   });
-
-// sendDigestMessage();
-// retrieveNewArticles();
