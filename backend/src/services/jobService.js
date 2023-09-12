@@ -9,7 +9,7 @@ const jobFunctions = {
   RETRIEVE: retrieveNewArticles,
 };
 
-const handleJob = async (job) => {
+const startJob = async (job) => {
   const cronJobObject = new CronJob(
     job.cronTime,
     jobFunctions[job.type],
@@ -28,7 +28,7 @@ const handleJob = async (job) => {
 const initializeJobs = async () => {
   const jobList = await JobDAO.getJobs();
   jobList.forEach((job) => {
-    handleJob(job);
+    startJob(job);
   });
 };
 
