@@ -10,7 +10,7 @@ const FeedDeleteDialog = ({ open, onClose, onConfirm, feed }) => {
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Confirm Delete</DialogTitle>
       <DialogContent>
-        Are you sure you want to delete feed "{feed.name}"?
+        Are you sure you want to delete feed "{feed ? feed.name : ""}"?
       </DialogContent>
       <DialogActions>
         <Button

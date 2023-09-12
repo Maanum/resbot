@@ -7,13 +7,13 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useState, useEffect } from "react";
 
-const FeedEditDialog = ({ open, feed, onClose, onSave }) => {
-  const [localTitle, setLocalTitle] = useState(feed ? feed.name : "");
-  const [localUrl, setLocalUrl] = useState(feed ? feed.url : "");
+const FeedEditDialog = ({ open, feed = {}, onClose, onSave }) => {
+  const [localTitle, setLocalTitle] = useState("");
+  const [localUrl, setLocalUrl] = useState("");
 
   useEffect(() => {
-    setLocalTitle(feed ? feed.name : "");
-    setLocalUrl(feed ? feed.url : "");
+    setLocalTitle(feed.name || "");
+    setLocalUrl(feed.url || "");
   }, [feed]);
 
   const resetFields = () => {

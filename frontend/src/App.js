@@ -13,7 +13,7 @@ import { fetchFeeds, updateFeed, createFeed, deleteFeed } from "./api/api";
 const App = () => {
   const [feeds, setFeeds] = useState([]);
   const [open, setOpen] = useState(false); // For dialog
-  const [currentFeed, setCurrentFeed] = useState(null); // Store the feed being edited
+  const [currentFeed, setCurrentFeed] = useState({}); // Store the feed being edited
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [feedToDelete, setFeedToDelete] = useState(null);
 
