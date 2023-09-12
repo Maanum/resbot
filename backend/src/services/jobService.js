@@ -9,6 +9,11 @@ const jobFunctions = {
   RETRIEVE: retrieveNewArticles,
 };
 
+const getJobs = async () => {
+  const jobs = await JobDAO.getJobs();
+  return jobs;
+};
+
 const startJob = async (job) => {
   const cronJobObject = new CronJob(
     job.cronTime,
@@ -32,4 +37,4 @@ const initializeJobs = async () => {
   });
 };
 
-export default { initializeJobs };
+export { initializeJobs, getJobs };
