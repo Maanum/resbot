@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid";
 import "./FeedItem.css";
 
 const FeedItem = ({ feed, onEdit, onDelete }) => (
-  <ListItem>
+  <ListItem disableGutters>
     <Grid container alignItems="center" className="noWrapContainer">
       <Grid item style={{ width: 50 }}>
         <Avatar alt="Page Favicon" src={feed.icon} />

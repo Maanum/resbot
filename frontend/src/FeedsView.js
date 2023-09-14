@@ -1,4 +1,3 @@
-import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
 import Button from "@mui/material/Button";
 import React, { useState, useEffect } from "react";
@@ -17,10 +16,8 @@ const FeedsView = () => {
   const [feedToDelete, setFeedToDelete] = useState(null);
 
   useEffect(() => {
-    // Fetch the data when the component mounts
     fetchFeeds().then((data) => setFeeds(data));
-  }, []); // The empty dependency array means this useEffect will run once when the component mounts
-
+  }, []);
   const handleOpen = (feed) => {
     setCurrentFeed(feed);
     setOpen(true);
@@ -55,44 +52,37 @@ const FeedsView = () => {
 
   return (
     <>
-      <Grid
-        container
-        direction="column"
-        spacing={2}
-        style={{ maxWidth: 1000, margin: "auto" }}
-      >
+      <Grid container direction="column" spacing={2}>
         <Grid item xs={12}>
-          <Paper style={{ width: "100%" }}>
-            <List>
-              <ListSubheader>
-                <Grid container alignItems="center" className="noWrapContainer">
-                  <Grid item style={{ width: 50 }}>
-                    Image
-                  </Grid>
-                  <Grid item xs>
-                    Name & URL
-                  </Grid>
-                  <Grid item style={{ width: 100, textAlign: "center" }}>
-                    Articles
-                  </Grid>
-                  <Grid item style={{ width: 50 }}>
-                    Edit
-                  </Grid>
-                  <Grid item style={{ width: 50 }}>
-                    Delete
-                  </Grid>
+          <List style={{ width: "100%" }}>
+            <ListSubheader disableGutters>
+              <Grid container alignItems="center" className="noWrapContainer">
+                <Grid item style={{ width: 50 }}>
+                  Image
                 </Grid>
-              </ListSubheader>
-              {feeds.map((feed) => (
-                <FeedItem
-                  feed={feed}
-                  onEdit={handleOpen}
-                  onDelete={handleDeletePrompt}
-                  key={feed.id}
-                />
-              ))}
-            </List>
-          </Paper>
+                <Grid item xs>
+                  Name & URL
+                </Grid>
+                <Grid item style={{ width: 100, textAlign: "center" }}>
+                  Articles
+                </Grid>
+                <Grid item style={{ width: 50 }}>
+                  Edit
+                </Grid>
+                <Grid item style={{ width: 50 }}>
+                  Delete
+                </Grid>
+              </Grid>
+            </ListSubheader>
+            {feeds.map((feed) => (
+              <FeedItem
+                feed={feed}
+                onEdit={handleOpen}
+                onDelete={handleDeletePrompt}
+                key={feed.id}
+              />
+            ))}
+          </List>
         </Grid>
         <Grid item xs={12} container justifyContent="flex-end">
           <Button

@@ -1,5 +1,3 @@
-const API_URL = "http://localhost:3001/api/feeds";
-
 const fetchFeeds = async () =>
   fetch("http://localhost:3001/api/feeds")
     .then(async (response) => (await response.json()).data)
