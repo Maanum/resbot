@@ -7,7 +7,7 @@ import { existsSync, writeFileSync } from "node:fs";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const file = join(
   __dirname,
-  `./../../data/${process.env.DB_NAME || "./../../data/db.json"}`
+  `./../../data/${process.env.DB_NAME || "./../data/db.json"}`
 );
 if (!existsSync(file)) {
   throw new Error(`File ${file} not found`);

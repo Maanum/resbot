@@ -17,7 +17,6 @@ const JobDAO = {
   },
 
   updateJob: async (id, newJobData) => {
-    console.log(`newJobData2: ${JSON.stringify(newJobData)}`);
     try {
       const db = await getDb();
       const index = db.data.jobs.findIndex((job) => job.id === id);
@@ -30,6 +29,18 @@ const JobDAO = {
         throw new Error(`Job with id ${id} not found`);
       }
     } catch (error) {
+      throw error;
+    }
+  },
+
+  createJob: async (job) => {
+    try {
+      const db = await getDb();
+      db.data.jobs.push(job);
+      db.write();
+      return job;
+    } catch (error) {
+      console.log(error);
       throw error;
     }
   },

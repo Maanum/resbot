@@ -3,6 +3,7 @@ import cronstrue from "cronstrue";
 import { sendDigestMessage } from "../utils/emailHelper.js";
 import { retrieveNewArticles } from "./articleService.js";
 import { JobDAO } from "../dao/jobDAO.js";
+import { v4 as uuidv4 } from "uuid";
 
 const jobFunctions = {
   SEND: sendDigestMessage,
@@ -15,19 +16,45 @@ const getJobs = async () => {
 };
 
 const updateJob = async (id, newJobData) => {
-  console.log(`newJobData: ${JSON.stringify(newJobData)}`);
-  const keys = Object.keys(newJobData);
   if (
     !newJobData.hasOwnProperty("cronTime") ||
     !newJobData.hasOwnProperty("timezone") ||
     !newJobData.hasOwnProperty("type") ||
     !newJobData.hasOwnProperty("active")
   ) {
-    console.log("whooops");
     throw new Error(`Invalid job data.`);
   }
 
   return await JobDAO.updateJob(id, newJobData);
+};
+
+const createJob = async (newJobData) => {
+  console.log(`newJobData: ${JSON.stringify(newJobData)}`);
+  try {
+    if (
+      !newJobData.hasOwnProperty("cronTime") ||
+      !newJobData.hasOwnProperty("timezone") ||
+      !newJobData.hasOwnProperty("type")
+    ) {
+      throw new Error(
+        `Invalid job data. Expected "cronTime", "type" and "timezone" fields only.`
+      );
+    }
+    const validJobTypes = Object.keys(jobFunctions);
+
+    if (!validJobTypes.includes(newJobData.type)) {
+      throw new Error(`Invalid Job Type must be in ${validJobTypes}.`);
+    }
+    if (!newJobData.hasOwnProperty("active")) {
+      newJobData.active = true;
+    }
+    const jobFull = { ...newJobData, id: uuidv4() };
+
+    return await JobDAO.createJob(jobFull);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
 const startJob = async (job) => {
@@ -53,4 +80,4 @@ const initializeJobs = async () => {
   });
 };
 
-export { initializeJobs, getJobs, updateJob };
+export { initializeJobs, getJobs, createJob, updateJob };

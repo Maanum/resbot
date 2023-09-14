@@ -1,5 +1,5 @@
 import express from "express";
-import { getJobs, updateJob } from "../services/jobService.js";
+import { getJobs, updateJob, createJob } from "../services/jobService.js";
 
 const router = express.Router();
 
@@ -22,6 +22,23 @@ router.put("/api/jobs/:id", async (req, res) => {
         error: { message: error.message },
       });
     } else if (error.message.includes("Invalid Job data")) {
+      res.status(400).send({
+        error: { message: error.message },
+      });
+    } else {
+      // For other unexpected errors.
+      res.status(500).send({ error: { message: "Server error" } });
+    }
+  }
+});
+
+router.post("/api/jobs", async (req, res) => {
+  try {
+    const serviceResponse = await createJob(req.body);
+    res.status(201).json({ data: serviceResponse });
+  } catch (error) {
+    // Based on the error message, determine the error code.
+    if (error.message.includes("Invalid job data")) {
       res.status(400).send({
         error: { message: error.message },
       });
