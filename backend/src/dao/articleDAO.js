@@ -1,7 +1,7 @@
 import { getDb } from "../config/initDB.js";
 
 const ArticleDAO = {
-  getArticle: async () => {
+  getArticles: async () => {
     const db = await getDb();
     return db.data.articles;
   },

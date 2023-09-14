@@ -1,12 +1,15 @@
 import nodemailer from "nodemailer";
-import { getUnsentArticles } from "../services/articleService.js";
+import {
+  getUnsentArticles,
+  markArticleAsSent,
+} from "../services/articleService.js";
 
 const createNotificationBodyText = async (articles) => {
   if (!Array.isArray(articles)) {
     throw new Error("Expected an array of data entries.");
   }
 
-  let htmlOutput = "";
+  let htmlOutput = "<h1>📚ResBot</h1><hr>";
 
   articles.forEach((article) => {
     if (
@@ -42,7 +45,7 @@ const createNotificationBodyText = async (articles) => {
 };
 
 const sendDigestMessage = async () => {
-  const articles = getUnsentArticles();
+  const articles = await getUnsentArticles();
   if (articles.length === 0) {
     console.log("Email: No new articles to send.");
     return;

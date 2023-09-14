@@ -29,7 +29,8 @@ const getSeenArticleURLs = async () => {
 
 const getUnsentArticles = async () => {
   const articles = await ArticleDAO.getArticles();
-  return articles.filter((article) => article.sentInDigest === false);
+  const unsentArticles = articles.filter((article) => !article.sentInDigest);
+  return unsentArticles;
 };
 
 const markArticleAsSent = async (article) => {

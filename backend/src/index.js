@@ -4,6 +4,7 @@ import { getDb } from "./config/initDB.js";
 import feedRoutes from "./api/feedRoutes.js";
 import jobRoutes from "./api/jobRoutes.js";
 import { initializeJobs } from "./services/jobService.js";
+import { sendDigestMessage } from "./utils/emailHelper.js";
 
 const initializeApp = async () => {
   await getDb(); // Initialize the database
@@ -28,3 +29,5 @@ initializeApp()
   .catch((err) => {
     console.error("Error during initialization:", err);
   });
+
+// sendDigestMessage();
