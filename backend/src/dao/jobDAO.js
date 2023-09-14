@@ -15,6 +15,24 @@ const JobDAO = {
       throw new Error(`Job with id ${id} not found`);
     }
   },
+
+  updateJob: async (id, newJobData) => {
+    console.log(`newJobData2: ${JSON.stringify(newJobData)}`);
+    try {
+      const db = await getDb();
+      const index = db.data.jobs.findIndex((job) => job.id === id);
+
+      if (index !== -1) {
+        db.data.jobs[index] = { ...db.data.jobs[index], ...newJobData };
+        db.write();
+        return db.data.jobs[index];
+      } else {
+        throw new Error(`Job with id ${id} not found`);
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export { JobDAO };

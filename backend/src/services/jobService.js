@@ -14,6 +14,22 @@ const getJobs = async () => {
   return jobs;
 };
 
+const updateJob = async (id, newJobData) => {
+  console.log(`newJobData: ${JSON.stringify(newJobData)}`);
+  const keys = Object.keys(newJobData);
+  if (
+    !newJobData.hasOwnProperty("cronTime") ||
+    !newJobData.hasOwnProperty("timezone") ||
+    !newJobData.hasOwnProperty("type") ||
+    !newJobData.hasOwnProperty("active")
+  ) {
+    console.log("whooops");
+    throw new Error(`Invalid job data.`);
+  }
+
+  return await JobDAO.updateJob(id, newJobData);
+};
+
 const startJob = async (job) => {
   const cronJobObject = new CronJob(
     job.cronTime,
@@ -37,4 +53,4 @@ const initializeJobs = async () => {
   });
 };
 
-export { initializeJobs, getJobs };
+export { initializeJobs, getJobs, updateJob };
