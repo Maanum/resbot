@@ -4,56 +4,87 @@ import { sendDigestMessage } from "../utils/emailHelper.js";
 import { retrieveNewArticles } from "./articleService.js";
 import { JobDAO } from "../dao/jobDAO.js";
 import { v4 as uuidv4 } from "uuid";
+import Joi from "joi";
+
+const DAO_ERROR = {
+  error: {
+    code: "DAO_ERROR",
+    message: "An error occurred while processing the data.",
+  },
+};
+
+const NOT_FOUND = {
+  error: {
+    code: "NOT_FOUND",
+    message: "The requested resource was not found.",
+  },
+};
 
 const jobFunctions = {
   SEND: sendDigestMessage,
   RETRIEVE: retrieveNewArticles,
 };
 
+const jobSchema = Joi.object({
+  cronTime: Joi.string().required(),
+  timezone: Joi.string().required(),
+  type: Joi.string()
+    .valid(...Object.keys(jobFunctions))
+    .required(),
+  active: Joi.boolean().default(true),
+});
+
 const getJobs = async () => {
-  const jobs = await JobDAO.getJobs();
-  return jobs;
+  try {
+    const result = await JobDAO.getJobs();
+    return { data: result };
+  } catch (daoError) {
+    return DAO_ERROR;
+  }
 };
 
 const updateJob = async (id, newJobData) => {
-  if (
-    !newJobData.hasOwnProperty("cronTime") ||
-    !newJobData.hasOwnProperty("timezone") ||
-    !newJobData.hasOwnProperty("type") ||
-    !newJobData.hasOwnProperty("active")
-  ) {
-    throw new Error(`Invalid job data.`);
+  const { error, value } = jobSchema.validate(newJobData);
+  if (error) {
+    return {
+      error: {
+        code: "INVALID_DATA",
+        message: error.details[0].message,
+      },
+    };
   }
 
-  return await JobDAO.updateJob(id, newJobData);
+  try {
+    await JobDAO.getJobById(id);
+    const result = await JobDAO.updateJob(id, value);
+    return { data: result };
+  } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return NOT_FOUND;
+    }
+    return DAO_ERROR;
+  }
 };
 
 const createJob = async (newJobData) => {
-  console.log(`newJobData: ${JSON.stringify(newJobData)}`);
+  const { error, value } = jobSchema.validate(newJobData);
+
+  if (error) {
+    return {
+      error: {
+        code: "INVALID_DATA",
+        message: error.details[0].message,
+      },
+    };
+  }
+
+  const jobFull = { ...value, id: uuidv4() };
+
   try {
-    if (
-      !newJobData.hasOwnProperty("cronTime") ||
-      !newJobData.hasOwnProperty("timezone") ||
-      !newJobData.hasOwnProperty("type")
-    ) {
-      throw new Error(
-        `Invalid job data. Expected "cronTime", "type" and "timezone" fields only.`
-      );
-    }
-    const validJobTypes = Object.keys(jobFunctions);
-
-    if (!validJobTypes.includes(newJobData.type)) {
-      throw new Error(`Invalid Job Type must be in ${validJobTypes}.`);
-    }
-    if (!newJobData.hasOwnProperty("active")) {
-      newJobData.active = true;
-    }
-    const jobFull = { ...newJobData, id: uuidv4() };
-
-    return await JobDAO.createJob(jobFull);
-  } catch (error) {
-    console.log(error);
-    throw error;
+    const result = await JobDAO.createJob(jobFull);
+    return { data: result };
+  } catch (daoError) {
+    return DAO_ERROR;
   }
 };
 
