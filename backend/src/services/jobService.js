@@ -4,7 +4,7 @@ import { sendDigestMessage } from "../utils/emailHelper.js";
 import { retrieveNewArticles } from "./articleService.js";
 import { JobDAO } from "../dao/jobDAO.js";
 import { v4 as uuidv4 } from "uuid";
-import Joi from "joi";
+import { jobSchema } from "common";
 
 const DAO_ERROR = {
   error: {
@@ -20,19 +20,10 @@ const NOT_FOUND = {
   },
 };
 
-const jobFunctions = {
+const JOB_FUNCTIONS = {
   SEND: sendDigestMessage,
   RETRIEVE: retrieveNewArticles,
 };
-
-const jobSchema = Joi.object({
-  cronTime: Joi.string().required(),
-  timezone: Joi.string().required(),
-  type: Joi.string()
-    .valid(...Object.keys(jobFunctions))
-    .required(),
-  active: Joi.boolean().default(true),
-});
 
 const getJobs = async () => {
   try {
@@ -55,7 +46,7 @@ const updateJob = async (id, newJobData) => {
   }
 
   try {
-    await JobDAO.getJobById(id);
+    await JobDAO.getJob(id);
     const result = await JobDAO.updateJob(id, value);
     return { data: result };
   } catch (error) {
@@ -91,7 +82,7 @@ const createJob = async (newJobData) => {
 const startJob = async (job) => {
   const cronJobObject = new CronJob(
     job.cronTime,
-    jobFunctions[job.type],
+    JOB_FUNCTIONS[job.type],
     null,
     false,
     job.timezone
@@ -111,4 +102,4 @@ const initializeJobs = async () => {
   });
 };
 
-export { initializeJobs, getJobs, createJob, updateJob };
+export { initializeJobs, getJobs, createJob, updateJob, JOB_FUNCTIONS };

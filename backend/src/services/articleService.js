@@ -9,6 +9,7 @@ import {
 } from "../utils/rssProcessor.js";
 import { ArticleDAO } from "../dao/articleDAO.js";
 import { getFeedUrls } from "./feedService.js";
+import { articleListSchema } from "common";
 
 const retrieveNewArticles = async () => {
   const rssUrls = await getFeedUrls();
@@ -17,7 +18,16 @@ const retrieveNewArticles = async () => {
   const newArticles = await filterOutKnownArticles(articles);
   const articlesWithContent = await getArticleContent(newArticles);
   const fullArticles = await getArticleAnalysis(articlesWithContent);
-  ArticleDAO.createArticles(fullArticles);
+  const { error, value } = articleListSchema.validate(fullArticles);
+  if (error) {
+    return {
+      error: {
+        code: "INVALID_DATA",
+        message: error.details[0].message,
+      },
+    };
+  }
+  ArticleDAO.createArticles(value);
 };
 
 // Utility function to get seen URLs

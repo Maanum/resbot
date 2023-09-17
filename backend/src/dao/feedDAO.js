@@ -1,6 +1,18 @@
 import { getDb } from "../config/initDB.js";
-import { v4 as uuidv4 } from "uuid";
-import { getFavicon } from "../utils/dataRetrieval.js";
+
+const findFeedIndexById = async (id) => {
+  const db = await getDb();
+  const index = db.data.feeds.findIndex((feed) => feed.id === id);
+
+  if (index === -1) {
+    throw {
+      code: "NOT_FOUND",
+      message: `Feed with id ${id} not found`,
+    };
+  }
+
+  return { db, index };
+};
 
 const FeedDAO = {
   getFeeds: async () => {
@@ -9,12 +21,18 @@ const FeedDAO = {
   },
 
   getFeed: async (id) => {
-    const db = await getDb();
-    const index = db.data.feeds.findIndex((feed) => feed.id === id);
-    if (index !== -1) {
+    try {
+      const { db, index } = await findFeedIndexById(id);
       return db.data.feeds[index];
-    } else {
-      throw new Error(`Feed with id ${id} not found`);
+    } catch (error) {
+      if (error.code === "NOT_FOUND") {
+        throw error; // Rethrow the "NOT_FOUND" error
+      }
+      throw {
+        code: "DAO_ERROR",
+        message: "An error occurred in the DAO layer.",
+        originalError: error,
+      };
     }
   },
 
@@ -26,28 +44,35 @@ const FeedDAO = {
   },
 
   updateFeed: async (id, newFeedData) => {
-    const db = await getDb();
-    const index = db.data.feeds.findIndex((feed) => feed.id === id);
-
-    if (index !== -1) {
+    try {
+      const { db, index } = await findFeedIndexById(id);
       db.data.feeds[index] = { ...db.data.feeds[index], ...newFeedData };
       db.write();
       return db.data.feeds[index];
-    } else {
-      throw new Error(`Feed with id ${id} not found`);
+    } catch (error) {
+      throw {
+        code: "DAO_ERROR",
+        message: "An error occurred in the DAO layer.",
+        originalError: error,
+      };
     }
   },
 
   deleteFeed: async (id) => {
-    const db = await getDb();
-    const index = db.data.feeds.findIndex((feed) => feed.id === id);
-    if (index !== -1) {
-      const deletedFeed = db.data.feeds[index];
+    try {
+      const { db, index } = await findFeedIndexById(id);
       db.data.feeds.splice(index, 1);
       db.write();
-      return deletedFeed;
-    } else {
-      throw new Error(`Feed with id ${id} not found`);
+      return true;
+    } catch (error) {
+      if (error.code === "NOT_FOUND") {
+        throw error; // Rethrow the "NOT_FOUND" error
+      }
+      throw {
+        code: "DAO_ERROR",
+        message: "An error occurred in the DAO layer.",
+        originalError: error,
+      };
     }
   },
 };

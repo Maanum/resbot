@@ -20,7 +20,7 @@ const JobDAO = {
     return db.data.jobs;
   },
 
-  getJobById: async (id) => {
+  getJob: async (id) => {
     try {
       const { db, index } = await findJobIndexById(id);
       return db.data.jobs[index];

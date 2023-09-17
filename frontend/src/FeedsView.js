@@ -7,6 +7,7 @@ import FeedItem from "./components/FeedItem";
 import FeedEditDialog from "./components/FeedEditDialog";
 import FeedDeleteDialog from "./components/FeedDeleteDialog";
 import { fetchFeeds, updateFeed, createFeed, deleteFeed } from "./api/apiFeeds";
+import { feedSchema } from "common";
 
 const FeedsView = () => {
   const [feeds, setFeeds] = useState([]);
@@ -18,6 +19,7 @@ const FeedsView = () => {
   useEffect(() => {
     fetchFeeds().then((data) => setFeeds(data));
   }, []);
+
   const handleOpen = (feed) => {
     setCurrentFeed(feed);
     setOpen(true);
@@ -28,6 +30,14 @@ const FeedsView = () => {
   };
 
   const handleSave = async (feedData) => {
+    // Validate using Joi
+    const { error } = feedSchema.validate(feedData);
+
+    if (error) {
+      // Handle the validation error, maybe show a user-friendly message
+      alert(error.details[0].message); // For simplicity, using an alert. Consider a better UX approach.
+      return;
+    }
     if (currentFeed && !currentFeed.isNew) {
       await updateFeed(currentFeed.id, feedData);
     } else {

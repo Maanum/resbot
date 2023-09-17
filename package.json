@@ -1,0 +1,11 @@
+{
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "common",
+    "frontend",
+    "backend"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}
