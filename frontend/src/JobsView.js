@@ -4,8 +4,9 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import { ListSubheader } from "@mui/material";
 import JobItem from "./components/JobItem";
-import { fetchJobs, updateJob } from "./api/apiJobs";
-// import { fetchJobs, updateJob, createJob, deleteJob } from "./api/apiJobs";
+import { fetchJobs, updateJob, createJob } from "./api/apiJobs";
+import { jobSchema } from "common";
+import JobEditDialog from "./components/JobEditDialog";
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -22,6 +23,27 @@ const Jobs = () => {
   const handleOpen = (job) => {
     setCurrentJob(job);
     setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSave = async (jobData) => {
+    const { error } = jobSchema.validate(jobData);
+    if (error) {
+      alert(error.details[0].message);
+      return;
+    }
+
+    if (currentJob && !currentJob.isNew) {
+      await updateJob(currentJob.id, jobData);
+    } else {
+      await createJob(jobData);
+    }
+    const freshJobs = await fetchJobs();
+    setJobs(freshJobs);
+    setOpen(false);
   };
 
   const handleDeletePrompt = (job) => {
@@ -84,26 +106,17 @@ const Jobs = () => {
           </Button>
         </Grid>
       </Grid>
+      <JobEditDialog
+        open={open}
+        job={currentJob}
+        onClose={handleClose}
+        onSave={handleSave}
+      />
     </>
   );
 };
 
 export default Jobs;
-
-// const handleClose = () => {
-//   setOpen(false);
-// };
-
-// const handleSave = async (jobData) => {
-//   if (currentJob && !currentJob.isNew) {
-//     await updateJob(currentJob.id, jobData);
-//   } else {
-//     await createJob(jobData);
-//   }
-//   const freshJobs = await fetchJobs();
-//   setJobs(freshJobs);
-//   setOpen(false);
-// };
 
 // const handleDelete = async (jobId) => {
 //   await deleteJob(jobId);
@@ -112,15 +125,9 @@ export default Jobs;
 //   setJobs(freshJobs);
 // };
 
-/* <JobEditDialog
-        open={open}
-        job={currentJob}
-        onClose={handleClose}
-        onSave={handleSave}
-      />
-      <JobDeleteDialog
-        open={deleteConfirmOpen}
-        onClose={() => setDeleteConfirmOpen(false)}
-        onConfirm={handleDelete}
-        Job={jobToDelete}
-      /> */
+// <JobDeleteDialog
+//   open={deleteConfirmOpen}
+//   onClose={() => setDeleteConfirmOpen(false)}
+//   onConfirm={handleDelete}
+//   Job={jobToDelete}
+// />

@@ -24,4 +24,26 @@ const updateJob = (jobID, jobData) =>
       );
     });
 
-export { fetchJobs, updateJob };
+const createJob = (jobData) => {
+  return fetch(`http://localhost:3001/api/jobs`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(jobData),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error(
+        "There was a problem with the fetch operation:",
+        error.message
+      );
+    });
+};
+
+export { fetchJobs, updateJob, createJob };
