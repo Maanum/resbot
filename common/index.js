@@ -1,10 +1,26 @@
 import Joi from "joi";
+import moment from "moment-timezone";
+import { CronTime } from "cron";
 
+const cronValidator = (value, helpers) => {
+  try {
+    new CronTime(value);
+    return value; // If no error is thrown, return the valid value
+  } catch (error) {
+    // return helpers.error("string.pattern.base", { value }); // If an error is thrown, return a Joi error
+    return helpers.error("any.invalid");
+  }
+};
 const LOCAL_JOB_FUNCTIONS = ["SEND", "RETRIEVE"];
+const timezones = moment.tz.names();
 
 const jobSchema = Joi.object({
-  cronTime: Joi.string().required(),
-  timezone: Joi.string().required(),
+  cronTime: Joi.string()
+    .custom(cronValidator, "Cron Time Validation")
+    .required(),
+  timezone: Joi.string()
+    .valid(...timezones)
+    .required(),
   type: Joi.string()
     .valid(...LOCAL_JOB_FUNCTIONS)
     .required(),
